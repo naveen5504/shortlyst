@@ -2,8 +2,6 @@
 
 An intelligent HR automation platform that uses a **fully local RAG (Retrieval-Augmented Generation) pipeline** to intelligently screen, rank, and shortlist candidates — no cloud API keys required. Built on a modern React + Node.js full-stack architecture with [Ollama](https://ollama.com) powering local AI inference.
 
-> 🏆 Built for the **India.Runs Hackathon** — AI Brain for Modern Hiring challenge.
-
 ---
 
 ## 🎯 Overview
