@@ -13,8 +13,14 @@ def is_allowed_file(filename: str) -> bool:
 
 @app.route('/')
 def home():
-    """Render Shortlyst interactive screening workspace."""
-    return render_template('index.html')
+    """Render Shortlyst landing page."""
+    return render_template('landing.html')
+
+@app.route('/workspace')
+@app.route('/analyze', methods=['GET'])
+def workspace():
+    """Render Shortlyst screening workspace."""
+    return render_template('workspace.html')
 
 @app.route('/health')
 def health():
@@ -72,6 +78,7 @@ def upload_resumes():
     return jsonify({"resumes": summaries, "count": len(summaries)})
 
 @app.route('/api/analyze', methods=['POST'])
+@app.route('/analyze', methods=['POST'])
 def analyze():
     """Main RAG screening endpoint. Supports PDF & Image OCR for JD & resumes."""
     try:
