@@ -107,8 +107,10 @@ def analyze():
         if not resume_payload:
             return jsonify({"error": "No readable PDF or image resumes found"}), 400
 
-        # Run RAG Pipeline
-        candidates = analyze_candidates_pipeline(jd_text, resume_payload)
+        # Run RAG Pipeline with selected or default models
+        chat_model = request.form.get('chatModel') or None
+        embed_model = request.form.get('embedModel') or None
+        candidates = analyze_candidates_pipeline(jd_text, resume_payload, chat_model=chat_model, embed_model=embed_model)
 
         # Persist to SQLite
         job_title = request.form.get('jobTitle') or "Candidate Screening"

@@ -1,19 +1,98 @@
 /* Shortlyst Custom Styles */
 
+/* Reliable Gradient Headline */
+.gradient-text {
+    background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: #60a5fa; /* Fallback if background-clip: text is unsupported */
+    display: inline-block;
+}
+
+html.light .gradient-text {
+    background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 50%, #6d28d9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: #1d4ed8;
+}
+
+/* Light Mode Overrides */
+html.light body {
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+html.light .bg-surface-950 {
+    background-color: #f1f5f9;
+}
+html.light .bg-surface-900 {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+}
+html.light .bg-surface-800 {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+html.light .bg-slate-950 {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #0f172a;
+}
+html.light .bg-slate-900 {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #1e293b;
+}
+html.light .bg-slate-800 {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}
+html.light .text-slate-400 {
+    color: #64748b;
+}
+html.light .text-slate-300 {
+    color: #334155;
+}
+html.light .text-slate-200 {
+    color: #1e293b;
+}
+html.light .text-white {
+    color: #0f172a;
+}
+html.light .border-slate-800 {
+    border-color: #e2e8f0;
+}
+html.light .border-slate-800\/90 {
+    border-color: #e2e8f0;
+}
+html.light .border-slate-800\/80 {
+    border-color: #e2e8f0;
+}
+html.light .border-slate-800\/60 {
+    border-color: #e2e8f0;
+}
+html.light textarea,
+html.light input[type="text"] {
+    background-color: #ffffff;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: #090d16;
+    background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #1e293b;
+    background: #334155;
     border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+html.light ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
 }
 
 /* Score Ring Animation */
@@ -29,22 +108,31 @@
 }
 .candidate-card:hover {
     border-color: rgba(59, 130, 246, 0.35);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
 }
 
 /* Status Pills */
 .pill-strong {
     background-color: rgba(16, 185, 129, 0.12);
-    color: #34d399;
+    color: #059669;
     border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.dark .pill-strong {
+    color: #34d399;
 }
 .pill-moderate {
     background-color: rgba(245, 158, 11, 0.12);
-    color: #fbbf24;
+    color: #d97706;
     border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.dark .pill-moderate {
+    color: #fbbf24;
 }
 .pill-notfit {
     background-color: rgba(239, 68, 68, 0.12);
-    color: #f87171;
+    color: #dc2626;
     border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.dark .pill-notfit {
+    color: #f87171;
 }

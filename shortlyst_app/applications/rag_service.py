@@ -1,6 +1,6 @@
 import json
 import re
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import numpy as np
 from applications.ollama_service import embed, embed_batch, chat
 
@@ -41,9 +41,9 @@ def calculate_semantic_score(jd_embedding: List[float], chunk_embeddings: List[L
     k = min(top_k, len(similarities))
     return float(sum(similarities[:k]) / k)
 
-def llm_analyze_candidate(jd_text: str, resume_text: str, filename: str) -> Dict[str, Any]:
+def llm_analyze_candidate(jd_text: str, resume_text: str, filename: str, chat_model: Optional[str] = None) -> Dict[str, Any]:
     """Execute LLM prompt to extract structured reasoning and score."""
-    clean_name = re.sub(r"\.pdf$", "", filename, flags=re.IGNORECASE)
+    clean_name = re.sub(r"\.[a-zA-Z0-9]+$", "", filename)
     prompt = f"""You are an expert technical recruiter and hiring manager.
 Analyze the candidate resume against the Job Description.
 
@@ -69,7 +69,7 @@ CRITICAL INSTRUCTIONS:
 Return ONLY the JSON object:"""
 
     try:
-        raw_response = chat(prompt, temperature=0.2, response_format="json")
+        raw_response = chat(prompt, temperature=0.2, response_format="json", model=chat_model)
         match = re.search(r"\{[\s\S]*\}", raw_response)
         if match:
             parsed = json.loads(match.group(0))
@@ -89,13 +89,18 @@ Return ONLY the JSON object:"""
         "keyGaps": ["Detailed automated evaluation limited"]
     }
 
-def analyze_candidates_pipeline(jd_text: str, resumes: List[Dict[str, str]]) -> List[Dict[str, Any]]:
-    """Execute full RAG pipeline: Embedding -> Vector Similarity -> LLM -> Hybrid Scoring."""
+def analyze_candidates_pipeline(
+    jd_text: str,
+    resumes: List[Dict[str, str]],
+    chat_model: Optional[str] = None,
+    embed_model: Optional[str] = None
+) -> List[Dict[str, Any]]:
+    """Execute full RAG pipeline with selectable Ollama chat and embedding models."""
     if not jd_text.strip() or not resumes:
         return []
 
     # 1. Embed Job Description
-    jd_embedding = embed(jd_text)
+    jd_embedding = embed(jd_text, model=embed_model)
 
     # 2. Chunk & Embed each resume
     results: List[Dict[str, Any]] = []
@@ -105,13 +110,13 @@ def analyze_candidates_pipeline(jd_text: str, resumes: List[Dict[str, str]]) -> 
         text = item.get("text", "")
 
         chunks = chunk_text(text)
-        chunk_embeddings = embed_batch(chunks) if chunks else []
+        chunk_embeddings = embed_batch(chunks, model=embed_model) if chunks else []
 
         # 3. Semantic similarity (60% weight)
         raw_semantic = calculate_semantic_score(jd_embedding, chunk_embeddings)
 
         # 4. LLM reasoning (40% weight)
-        llm_data = llm_analyze_candidate(jd_text, text, filename)
+        llm_data = llm_analyze_candidate(jd_text, text, filename, chat_model=chat_model)
 
         # 5. Hybrid combined score
         semantic_pct = raw_semantic * 100.0

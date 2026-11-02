@@ -16,35 +16,109 @@ function isImageFile(name) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initThemeToggle();
     initLlmHealthCheck();
     initJdInputs();
     initResumeDropzone();
     initScreeningFlow();
 });
 
-// ── 1. LLM Health Check ───────────────────────────────────────────────────────
+// ── 1. Dark & Light Theme Toggle ───────────────────────────────────────────────
+function initThemeToggle() {
+    const toggleBtn = document.getElementById('theme-toggle-btn');
+    if (!toggleBtn) return;
+
+    toggleBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        if (isDark) {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            localStorage.setItem('shortlyst_theme', 'light');
+        } else {
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('shortlyst_theme', 'dark');
+        }
+    });
+}
+
+// ── 2. LLM Health Check & Model Population ─────────────────────────────────────
 async function initLlmHealthCheck() {
     const indicator = document.getElementById('llm-indicator');
     const text = document.getElementById('llm-status-text');
+    const chatSelect = document.getElementById('chat-model-select');
+    const embedSelect = document.getElementById('embed-model-select');
+    const countLabel = document.getElementById('model-count-label');
+    const activeModelDisplay = document.getElementById('active-model-display');
 
     try {
         const res = await fetch('/api/health/llm');
         const data = await res.json();
+        
         if (data.ollama === 'connected') {
             indicator.className = 'w-2 h-2 rounded-full bg-emerald-400';
-            const count = data.availableModels ? data.availableModels.length : 0;
-            text.textContent = `Ollama: Online (${count} models)`;
+            const models = data.availableModels || [];
+            text.textContent = `Ollama: Online (${models.length} models)`;
+
+            if (countLabel) {
+                countLabel.textContent = `${models.length} local Ollama models ready for inference`;
+            }
+
+            // Populate Dropdowns if on workspace
+            if (chatSelect && embedSelect && models.length > 0) {
+                chatSelect.innerHTML = '';
+                embedSelect.innerHTML = '';
+
+                models.forEach(m => {
+                    // Chat model option
+                    const chatOpt = document.createElement('option');
+                    chatOpt.value = m;
+                    chatOpt.textContent = m;
+                    if (m.toLowerCase().includes('llama3.2') || m.toLowerCase().includes('llama3') || m.toLowerCase().includes('mistral')) {
+                        chatOpt.textContent += ' (Recommended)';
+                    }
+                    chatSelect.appendChild(chatOpt);
+
+                    // Embed model option
+                    const embedOpt = document.createElement('option');
+                    embedOpt.value = m;
+                    embedOpt.textContent = m;
+                    if (m.toLowerCase().includes('embed') || m.toLowerCase().includes('nomic')) {
+                        embedOpt.textContent += ' (Vector Embeddings)';
+                    }
+                    embedSelect.appendChild(embedOpt);
+                });
+
+                // Select sensible defaults
+                const defaultChat = models.find(m => m.toLowerCase().includes('llama3.2')) || models.find(m => !m.toLowerCase().includes('embed')) || models[0];
+                const defaultEmbed = models.find(m => m.toLowerCase().includes('embed')) || models[0];
+
+                if (defaultChat) chatSelect.value = defaultChat;
+                if (defaultEmbed) embedSelect.value = defaultEmbed;
+
+                updateActiveModelDisplay();
+                chatSelect.addEventListener('change', updateActiveModelDisplay);
+                embedSelect.addEventListener('change', updateActiveModelDisplay);
+            }
         } else {
             indicator.className = 'w-2 h-2 rounded-full bg-rose-500';
             text.textContent = 'Ollama: Offline (Start Ollama)';
+            if (countLabel) {
+                countLabel.textContent = 'Ollama unreachable — ensure Ollama is running at http://localhost:11434';
+            }
         }
     } catch (err) {
         indicator.className = 'w-2 h-2 rounded-full bg-rose-500';
         text.textContent = 'Ollama: Unreachable';
     }
+
+    function updateActiveModelDisplay() {
+        if (!activeModelDisplay || !chatSelect || !embedSelect) return;
+        activeModelDisplay.textContent = `Inference: ${embedSelect.value} (Vectors) + ${chatSelect.value} (LLM) + RapidOCR`;
+    }
 }
 
-// ── 2. Job Description Inputs ─────────────────────────────────────────────────
+// ── 3. Job Description Inputs ─────────────────────────────────────────────────
 function initJdInputs() {
     const modeTextBtn = document.getElementById('jd-mode-text');
     const modePdfBtn = document.getElementById('jd-mode-pdf');
@@ -54,6 +128,8 @@ function initJdInputs() {
     const charCount = document.getElementById('jd-char-count');
     const fileInput = document.getElementById('jd-file-input');
     const fileNameDisplay = document.getElementById('jd-file-name');
+
+    if (!modeTextBtn) return;
 
     modeTextBtn.addEventListener('click', () => {
         modeTextBtn.className = 'px-2.5 py-1 rounded-md bg-surface-800 text-white font-medium shadow-sm transition';
@@ -112,7 +188,7 @@ function initJdInputs() {
     }
 }
 
-// ── 3. Resumes Dropzone ───────────────────────────────────────────────────────
+// ── 4. Resumes Dropzone ───────────────────────────────────────────────────────
 function initResumeDropzone() {
     const dropzone = document.getElementById('resumes-dropzone');
     const fileInput = document.getElementById('resumes-file-input');
@@ -120,6 +196,8 @@ function initResumeDropzone() {
     const badge = document.getElementById('resume-count-badge');
     const clearBtn = document.getElementById('clear-resumes-btn');
     const emptyHint = document.getElementById('empty-resumes-hint');
+
+    if (!dropzone) return;
 
     dropzone.addEventListener('click', () => fileInput.click());
 
@@ -145,11 +223,13 @@ function initResumeDropzone() {
         }
     });
 
-    clearBtn.addEventListener('click', () => {
-        resumeFiles = [];
-        renderResumeList();
-        validateForm();
-    });
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            resumeFiles = [];
+            renderResumeList();
+            validateForm();
+        });
+    }
 
     function addResumeFiles(files) {
         const allowed = files.filter(f => isAllowedFile(f.name));
@@ -203,23 +283,29 @@ function initResumeDropzone() {
     }
 }
 
-// ── 4. Form Validation ────────────────────────────────────────────────────────
+// ── 5. Form Validation ────────────────────────────────────────────────────────
 function validateForm() {
     const textInput = document.getElementById('jd-text-input');
     const runBtn = document.getElementById('run-screening-btn');
+    if (!runBtn) return;
+
     const hasJd = (textInput && textInput.value.trim().length > 10) || selectedJdFile !== null;
     const hasResumes = resumeFiles.length > 0;
 
     runBtn.disabled = !(hasJd && hasResumes);
 }
 
-// ── 5. Screening Flow with Redirect ───────────────────────────────────────────
+// ── 6. Screening Flow with Dynamic Model Selection & Redirect ─────────────────
 function initScreeningFlow() {
     const runBtn = document.getElementById('run-screening-btn');
     const processing = document.getElementById('processing-state');
     const resetBtn = document.getElementById('reset-all-btn');
     const statusSubtitle = document.getElementById('pipeline-status-subtitle');
     const progressBar = document.getElementById('pipeline-progress-bar');
+    const chatSelect = document.getElementById('chat-model-select');
+    const embedSelect = document.getElementById('embed-model-select');
+
+    if (!runBtn) return;
 
     runBtn.addEventListener('click', async () => {
         runBtn.disabled = true;
@@ -237,21 +323,25 @@ function initScreeningFlow() {
 
         resumeFiles.forEach(f => form.append('resumes', f));
 
+        // Append chosen models if selected
+        const chosenChat = chatSelect ? chatSelect.value : 'llama3.2';
+        const chosenEmbed = embedSelect ? embedSelect.value : 'nomic-embed-text';
+        form.append('chatModel', chosenChat);
+        form.append('embedModel', chosenEmbed);
+
         // Phased progress meter while Ollama/OCR processes
         let progress = 12;
         progressBar.style.width = `${progress}%`;
-        statusSubtitle.textContent = 'Parsing documents and running OCR text extraction...';
+        statusSubtitle.textContent = `Extracting text and generating embeddings via ${chosenEmbed}...`;
 
         const timer = setInterval(() => {
             if (progress < 85) {
                 progress += Math.floor(Math.random() * 7) + 3;
                 progressBar.style.width = `${progress}%`;
-                if (progress > 30 && progress < 60) {
-                    statusSubtitle.textContent = 'Generating dense vector embeddings (nomic-embed-text)...';
-                } else if (progress >= 60 && progress < 80) {
-                    statusSubtitle.textContent = 'Calculating vector alignment & cosine similarity...';
-                } else if (progress >= 80) {
-                    statusSubtitle.textContent = 'Autonomous recruiter LLM analysis & qualitative scoring...';
+                if (progress > 35 && progress < 65) {
+                    statusSubtitle.textContent = `Computing vector cosine similarity alignment...`;
+                } else if (progress >= 65) {
+                    statusSubtitle.textContent = `Evaluating candidate fit with ${chosenChat}...`;
                 }
             }
         }, 1200);
@@ -273,7 +363,6 @@ function initScreeningFlow() {
             const data = await res.json();
             statusSubtitle.textContent = 'Screening complete! Redirecting to results dashboard...';
 
-            // Redirect to dedicated results page
             setTimeout(() => {
                 if (data.redirectUrl) {
                     window.location.href = data.redirectUrl;
@@ -288,7 +377,7 @@ function initScreeningFlow() {
             clearInterval(timer);
             processing.classList.add('hidden');
             runBtn.disabled = false;
-            alert(`Screening Failed: ${err.message}\n\nPlease verify that Ollama is running (http://localhost:11434) with models llama3.2 and nomic-embed-text.`);
+            alert(`Screening Failed: ${err.message}\n\nPlease check Ollama status at http://localhost:11434 and ensure ${chosenChat} and ${chosenEmbed} are pulled.`);
         }
     });
 
