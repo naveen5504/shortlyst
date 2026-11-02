@@ -1,85 +1,249 @@
-/* Shortlyst Custom Styles */
+/* ==========================================================================
+   Shortlyst Design System & Professional Theme Architecture
+   ========================================================================== */
 
-/* Reliable Gradient Headline */
+/* ── 1. Color Tokens (CSS Custom Properties) ─────────────────────────────── */
+:root {
+    /* Light Theme (Linear / Stripe inspired professional SaaS palette) */
+    --bg-page: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-surface-elevated: #ffffff;
+    --bg-subtle: #f1f5f9;
+    --bg-input: #ffffff;
+    --border-subtle: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --border-hover: #94a3b8;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --header-bg: rgba(255, 255, 255, 0.88);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    --brand-primary: #2563eb;
+    --brand-hover: #1d4ed8;
+    --brand-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
+    --meter-bg: #e2e8f0;
+}
+
+html.dark {
+    /* Dark Theme (Obsidian / Slate deep technical palette) */
+    --bg-page: #090d16;
+    --bg-surface: #0f172a;
+    --bg-surface-elevated: #131d35;
+    --bg-subtle: #060911;
+    --bg-input: #060911;
+    --border-subtle: #1e293b;
+    --border-strong: #334155;
+    --border-hover: #475569;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --header-bg: rgba(15, 23, 42, 0.75);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    --brand-primary: #3b82f6;
+    --brand-hover: #2563eb;
+    --brand-gradient: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%);
+    --meter-bg: #1e293b;
+}
+
+/* ── 2. Global Resets & Application ──────────────────────────────────────── */
+body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+header {
+    background-color: var(--header-bg) !important;
+    border-color: var(--border-subtle) !important;
+}
+
+footer {
+    background-color: var(--bg-page) !important;
+    border-color: var(--border-subtle) !important;
+    color: var(--text-muted) !important;
+}
+
+/* ── 3. High-Contrast Gradient Typography ────────────────────────────────── */
 .gradient-text {
-    background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%);
+    background: var(--brand-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    color: #60a5fa; /* Fallback if background-clip: text is unsupported */
+    color: var(--brand-primary); /* Safe fallback */
     display: inline-block;
+    font-weight: 800;
 }
 
-html.light .gradient-text {
-    background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 50%, #6d28d9 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: #1d4ed8;
+/* ── 4. Surface Mappings ─────────────────────────────────────────────────── */
+.bg-surface-950 {
+    background-color: var(--bg-page) !important;
 }
 
-/* Light Mode Overrides */
-html.light body {
-    background-color: #f8fafc;
-    color: #0f172a;
+.bg-surface-900 {
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border-subtle) !important;
+    box-shadow: var(--shadow-sm);
 }
-html.light .bg-surface-950 {
-    background-color: #f1f5f9;
+
+.bg-surface-800 {
+    background-color: var(--bg-subtle) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-subtle) !important;
 }
-html.light .bg-surface-900 {
+
+/* Inputs & Trays */
+.bg-slate-950,
+.bg-slate-950\/70,
+.bg-slate-950\/60,
+.bg-slate-950\/80,
+.bg-slate-950\/40 {
+    background-color: var(--bg-input) !important;
+    border-color: var(--border-subtle) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Buttons & Pills */
+.bg-slate-900,
+.bg-slate-900\/90 {
+    background-color: var(--bg-subtle) !important;
+    border-color: var(--border-subtle) !important;
+    color: var(--text-secondary) !important;
+}
+
+.bg-slate-800 {
+    background-color: var(--bg-subtle) !important;
+    border-color: var(--border-subtle) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* ── 5. Text Overrides across Themes ─────────────────────────────────────── */
+.text-white {
+    color: var(--text-primary) !important;
+}
+
+.text-slate-200 {
+    color: var(--text-primary) !important;
+}
+
+.text-slate-300 {
+    color: var(--text-secondary) !important;
+}
+
+.text-slate-400 {
+    color: var(--text-muted) !important;
+}
+
+.text-slate-500 {
+    color: var(--text-muted) !important;
+}
+
+/* Keep Brand & Accent Button text white */
+.bg-brand-600 .text-white,
+button.bg-brand-600,
+a.bg-brand-600 {
+    color: #ffffff !important;
+}
+
+/* ── 6. Form Controls & Dropdowns ────────────────────────────────────────── */
+textarea,
+input[type="text"],
+select {
+    background-color: var(--bg-input) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-strong) !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea:focus,
+input[type="text"]:focus,
+select:focus {
+    border-color: var(--brand-primary) !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+}
+
+html.light select option {
     background-color: #ffffff;
-    border-color: #e2e8f0;
-}
-html.light .bg-surface-800 {
-    background-color: #f1f5f9;
     color: #0f172a;
-}
-html.light .bg-slate-950 {
-    background-color: #f8fafc;
-    border-color: #e2e8f0;
-    color: #0f172a;
-}
-html.light .bg-slate-900 {
-    background-color: #f1f5f9;
-    border-color: #cbd5e1;
-    color: #1e293b;
-}
-html.light .bg-slate-800 {
-    background-color: #e2e8f0;
-    color: #0f172a;
-}
-html.light .text-slate-400 {
-    color: #64748b;
-}
-html.light .text-slate-300 {
-    color: #334155;
-}
-html.light .text-slate-200 {
-    color: #1e293b;
-}
-html.light .text-white {
-    color: #0f172a;
-}
-html.light .border-slate-800 {
-    border-color: #e2e8f0;
-}
-html.light .border-slate-800\/90 {
-    border-color: #e2e8f0;
-}
-html.light .border-slate-800\/80 {
-    border-color: #e2e8f0;
-}
-html.light .border-slate-800\/60 {
-    border-color: #e2e8f0;
-}
-html.light textarea,
-html.light input[type="text"] {
-    background-color: #ffffff;
-    color: #0f172a;
-    border-color: #cbd5e1;
 }
 
-/* Custom scrollbars */
+html.dark select option {
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+
+/* ── 7. Borders ──────────────────────────────────────────────────────────── */
+.border-slate-800,
+.border-slate-800\/90,
+.border-slate-800\/80,
+.border-slate-800\/60 {
+    border-color: var(--border-subtle) !important;
+}
+
+/* ── 8. Candidate Cards & Hover Elevation ────────────────────────────────── */
+.candidate-card {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.candidate-card:hover {
+    border-color: var(--brand-primary) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg) !important;
+}
+
+/* Radial score meter background circle */
+circle.score-bg {
+    stroke: var(--meter-bg);
+}
+
+.score-circle {
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+/* ── 9. Professional Fit Status Badges ───────────────────────────────────── */
+/* Strong Fit */
+html.light .pill-strong {
+    background-color: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+html.dark .pill-strong {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Moderate Fit */
+html.light .pill-moderate {
+    background-color: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+html.dark .pill-moderate {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Not Fit */
+html.light .pill-notfit {
+    background-color: #fff1f2;
+    color: #be123c;
+    border: 1px solid #fecdd3;
+}
+html.dark .pill-notfit {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* ── 10. Custom Scrollbar ────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -88,51 +252,9 @@ html.light input[type="text"] {
     background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: var(--border-strong);
     border-radius: 4px;
 }
-html.light ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-}
-
-/* Score Ring Animation */
-.score-circle {
-    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-}
-
-/* Card Hover Elevation */
-.candidate-card {
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.candidate-card:hover {
-    border-color: rgba(59, 130, 246, 0.35);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
-}
-
-/* Status Pills */
-.pill-strong {
-    background-color: rgba(16, 185, 129, 0.12);
-    color: #059669;
-    border: 1px solid rgba(16, 185, 129, 0.25);
-}
-.dark .pill-strong {
-    color: #34d399;
-}
-.pill-moderate {
-    background-color: rgba(245, 158, 11, 0.12);
-    color: #d97706;
-    border: 1px solid rgba(245, 158, 11, 0.25);
-}
-.dark .pill-moderate {
-    color: #fbbf24;
-}
-.pill-notfit {
-    background-color: rgba(239, 68, 68, 0.12);
-    color: #dc2626;
-    border: 1px solid rgba(239, 68, 68, 0.25);
-}
-.dark .pill-notfit {
-    color: #f87171;
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-hover);
 }

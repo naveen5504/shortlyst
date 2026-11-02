@@ -138,7 +138,7 @@
                     <!-- SVG Circular Radial Meter -->
                     <div class="relative w-16 h-16 flex items-center justify-center">
                         <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 88 88">
-                            <circle cx="44" cy="44" r="36" stroke="#1e293b" stroke-width="7" fill="none" />
+                            <circle class="score-bg" cx="44" cy="44" r="36" stroke-width="7" fill="none" />
                             <circle class="score-circle" cx="44" cy="44" r="36" stroke="{{ stroke_color }}" stroke-width="7" stroke-dasharray="{{ circumference }}" stroke-dashoffset="{{ offset }}" stroke-linecap="round" fill="none" />
                         </svg>
                         <span class="absolute font-mono font-bold text-sm text-white">{{ c.matchScore }}%</span>
